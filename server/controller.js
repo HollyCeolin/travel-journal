@@ -16,15 +16,14 @@ module.exports = {
             drop table if exists cities;
             drop table if exists countries;
             create table countries (
-                country_id serial primary key, 
+                country_id integer serial primary key, 
                 name varchar
             );
             create table cities (
-                city_id serial primary key, 
-                name varchar(100), 
+                city_id integer serial primary key, 
+                name varchar, 
                 rating integer, 
-                country_id integer references countries(country_id)
-            );
+                country_id integer references countries(country_id));
             insert into countries (name)
             values ('Afghanistan'),
             ('Albania'),
@@ -239,14 +238,13 @@ module.exports = {
 
     createCity: (req, res) => {
         console.log(req.body);
-    const {
-        name,
+    const {name,
         rating, 
         country_id} = req.body
 
         sequelize.query
         (`INSERT into cities(name, rating, country_id)
-        VALUES('${name}',${rating},         ${country_id})
+        VALUES('${name}', '${rating}', '${country_id}')
         `)
         
         .then (dbRes => res.status(200).send(dbRes[0]))
@@ -254,12 +252,13 @@ module.exports = {
     },
 
     getCities: (req, res) => {
-        sequelize.query(`SELECT
-         cities.city_id, cities.name AS city, cities.rating, countries.country_id, countries.name AS country,
-        FROM cities
-        JOIN countries
-        ON cities.country_id  = countries.country_id
-        WHERE country_id = (${country_id})`)
+        sequelize.query
+        (`SELECT *
+         FROM cities AS city
+         JOIN countries AS country
+         ON country.country_id = city.city_id
+         WHERE country.country_id = city.country_id
+         `)
         .then (dbRes => {
             res.status(200).send(dbRes[0])
         })
@@ -270,7 +269,7 @@ module.exports = {
         const { id } = req.params;
         sequelize.query(`DELETE 
         FROM cities
-        WHERE city_id = (${id})`)
+        WHERE city_id = ${id}`)
         .then (dbRes => {
             res.status(200).send(dbRes[0])
     })
