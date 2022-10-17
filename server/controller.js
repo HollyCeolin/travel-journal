@@ -237,14 +237,15 @@ module.exports = {
     },
 
     createCity: (req, res) => {
+        //console.log("City created");
         console.log(req.body);
-    const {name,
-        rating, 
-        country_id} = req.body
+    const {name} = req.body
+    const {rating} = req.body 
+    const {country_id} = req.body
 
         sequelize.query
-        (`INSERT into cities(name, rating, country_id)
-        VALUES('${name}', '${rating}', '${country_id}')
+        (`INSERT INTO cities(name, rating, country_id)
+        VALUES('${name}', ${rating}, ${country_id})
         `)
         
         .then (dbRes => res.status(200).send(dbRes[0]))
